@@ -1,14 +1,17 @@
 package com.example.surveynow.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Form {
+    public static String FIREBASE_COLLECTION = "form";
+
     private String id;
     private String name;
     private String description;
     private String author;
-    private List<QuestionType> questions;
+    private ArrayList<QuestionType> questions = new ArrayList<QuestionType>();
     private Date createdAt;
 
     public Form() {
@@ -46,11 +49,11 @@ public class Form {
         this.author = author;
     }
 
-    public List<QuestionType> getQuestions() {
+    public ArrayList<QuestionType> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<QuestionType> questions) {
+    public void setQuestions(ArrayList<QuestionType> questions) {
         this.questions = questions;
     }
 
