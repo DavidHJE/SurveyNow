@@ -3,10 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/addFormFragment">
+    app:startDestination="@id/listFormFragment">
     <fragment
         android:id="@+id/addFormFragment"
         android:name="com.example.surveynow.fragment.AddFormFragment"
         android:label="fragment_add_form"
-        tools:layout="@layout/fragment_add_form" />
+        tools:layout="@layout/fragment_add_form" >
+        <action
+            android:id="@+id/action_addFormFragment_to_listFormFragment"
+            app:destination="@id/listFormFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFormFragment"
+        android:name="com.example.surveynow.fragment.ListFormFragment"
+        android:label="fragment_list_form"
+        tools:layout="@layout/fragment_list_form" >
+        <action
+            android:id="@+id/action_listFormFragment_to_addFormFragment"
+            app:destination="@id/addFormFragment" />
+    </fragment>
 </navigation>

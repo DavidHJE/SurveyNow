@@ -2,65 +2,103 @@ package com.example.surveynow.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.surveynow.R;
+import com.example.surveynow.ListFormRecyclerViewAdapter;
+import com.example.surveynow.databinding.FragmentListFormBinding;
+import com.example.surveynow.model.Form;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListFormFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Map;
+
 public class ListFormFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FragmentListFormBinding binding;
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final String Tag = "ListFormFragment";
+    private ListFormRecyclerViewAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    ArrayList<Form> forms = new ArrayList<>();
 
     public ListFormFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFormFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListFormFragment newInstance(String param1, String param2) {
-        ListFormFragment fragment = new ListFormFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_form, container, false);
+
+        binding = FragmentListFormBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setUpArrayListForms();
+
+
+    }
+
+    public void setUpArrayListForms() {
+        db.collection(Form.FIREBASE_COLLECTION)
+                .orderBy("createdAt", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(Tag, document.getId() + " => " + document.getData());
+                                if (!isDataComplete(document.getData())) {
+                                    continue;
+                                }
+
+                                Form form = new Form();
+                                form.setId(document.getId());
+                                form.setName(document.getData().get("name").toString());
+                                form.setDescription(document.getData().get("description").toString());
+                                form.setAuthor(document.getData().get("author").toString());
+                                form.setCreatedAt(((Timestamp) document.getData().get("createdAt")).toDate());
+
+                                Log.d(Tag, form.toString());
+                                forms.add(form);
+                            }
+
+                            adapter = new ListFormRecyclerViewAdapter(getContext(), forms);
+                            binding.listFormRecyclerView.setAdapter(adapter);
+                            binding.listFormRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        } else {
+                            Log.w(Tag, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+    }
+
+    private Boolean isDataComplete(Map<String, Object> data) {
+        return data.containsKey("name") && data.containsKey("description") && data.containsKey("author") && data.containsKey("createdAt");
     }
 }

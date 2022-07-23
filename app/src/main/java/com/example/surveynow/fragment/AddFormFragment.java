@@ -132,6 +132,8 @@ public class AddFormFragment extends Fragment {
  */
             }
         });
+
+
     }
 
     /**
@@ -139,7 +141,7 @@ public class AddFormFragment extends Fragment {
      *
      * @return a Form Class
      */
-    public Form getFormFromView() {
+    private Form getFormFromView() {
         Form form = new Form();
         form.setName(binding.nameAddForm.getText().toString());
         form.setDescription(binding.descriptionAddForm.getText().toString());
@@ -154,7 +156,7 @@ public class AddFormFragment extends Fragment {
      *
      * @return true if the form is valid or elseif
      */
-    public Boolean validateFormView() {
+    private Boolean validateFormView() {
         if (TextUtils.isEmpty(binding.nameAddForm.getText().toString())) {
             Toast.makeText(getContext(), "Nom vide", Toast.LENGTH_SHORT).show();
             return false;

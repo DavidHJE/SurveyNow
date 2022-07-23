@@ -64,4 +64,16 @@ public class Form {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Form{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", author='" + author + '\'' +
+                ", questions=" + questions +
+                ", createdAt=" + createdAt.toString() +
+                '}';
+    }
 }

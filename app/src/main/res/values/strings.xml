@@ -23,4 +23,5 @@
     <string name="labelQuestion">Questions :</string>
     <string name="btnAddQuestion">Ajouter un question</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="titleListForm">Formulaires :</string>
 </resources>
