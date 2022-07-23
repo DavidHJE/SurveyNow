@@ -1,10 +1,13 @@
 package com.example.surveynow.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Form {
+public class Form implements Parcelable {
     public static String FIREBASE_COLLECTION = "form";
 
     private String id;
@@ -16,6 +19,25 @@ public class Form {
 
     public Form() {
     }
+
+    protected Form(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        description = in.readString();
+        author = in.readString();
+    }
+
+    public static final Creator<Form> CREATOR = new Creator<Form>() {
+        @Override
+        public Form createFromParcel(Parcel in) {
+            return new Form(in);
+        }
+
+        @Override
+        public Form[] newArray(int size) {
+            return new Form[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -75,5 +97,18 @@ public class Form {
                 ", questions=" + questions +
                 ", createdAt=" + createdAt.toString() +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(description);
+        parcel.writeString(author);
     }
 }

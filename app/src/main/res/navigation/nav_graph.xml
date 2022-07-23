@@ -21,5 +21,20 @@
         <action
             android:id="@+id/action_listFormFragment_to_addFormFragment"
             app:destination="@id/addFormFragment" />
+        <action
+            android:id="@+id/action_listFormFragment_to_detailFormFragment"
+            app:destination="@id/detailFormFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFormFragment"
+        android:name="com.example.surveynow.fragment.DetailFormFragment"
+        android:label="fragment_detail_form"
+        tools:layout="@layout/fragment_detail_form" >
+        <action
+            android:id="@+id/action_detailFormFragment_to_listFormFragment"
+            app:destination="@id/listFormFragment" />
+        <argument
+            android:name="form"
+            app:argType="com.example.surveynow.model.Form" />
     </fragment>
 </navigation>

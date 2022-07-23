@@ -1,12 +1,8 @@
 package com.example.surveynow;
 
-import android.content.Context;
-import android.nfc.Tag;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,33 +14,25 @@ import java.util.ArrayList;
 
 public class ListFormRecyclerViewAdapter extends RecyclerView.Adapter<ListFormRecyclerViewAdapter.MyViewHolder>
 {
-    private final String Tag = "ListFormRecyclerViewAdapter";
+    private ArrayList<Form> forms;
+    private OnListFormListener onListFormListener;
 
-    public Context context;
-    public ArrayList<Form> forms;
-
-    public ListFormRecyclerViewAdapter(Context context, ArrayList<Form> forms) {
-        this.context = context;
+    public ListFormRecyclerViewAdapter(ArrayList<Form> forms, OnListFormListener onListFormListener) {
         this.forms = forms;
-        Log.d(Tag, "Constructor");
-        Log.d(Tag, "context : " + context.toString());
-        Log.d(Tag, "forms : " + forms.toString());
+        this.onListFormListener = onListFormListener;
     }
 
     @NonNull
     @Override
     public ListFormRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(Tag, "Method OnCreateViewHolder");
-        LayoutInflater inflater = LayoutInflater.from(this.context);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.recycler_view_row_list_form, parent, false);
 
-        return new ListFormRecyclerViewAdapter.MyViewHolder(view);
+        return new ListFormRecyclerViewAdapter.MyViewHolder(view, this.onListFormListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListFormRecyclerViewAdapter.MyViewHolder holder, int position) {
-        Log.d(Tag, "onBing Method");
-
         holder.tvFormName.setText(forms.get(position).getName());
         holder.tvFormDescription.setText(forms.get(position).getDescription());
         holder.tvFormAuthor.setText(new StringBuilder().append("par ").append(forms.get(position).getAuthor()).toString());
@@ -53,29 +41,35 @@ public class ListFormRecyclerViewAdapter extends RecyclerView.Adapter<ListFormRe
 
     @Override
     public int getItemCount() {
-        Log.d(Tag, "Size : " + String.valueOf(forms.size()));
         return forms.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        private final String Tag = "ListFormRecyclerViewAdapter.MyViewHolder";
-
-        public Button btnForm;
         public TextView tvFormName, tvFormDescription, tvFormCreatedAt, tvFormAuthor;
+        public OnListFormListener onListFormListener;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, OnListFormListener onListFormListener)  {
             super(itemView);
 
-            btnForm = itemView.findViewById(R.id.btnForm);
+            this.onListFormListener = onListFormListener;
+
             tvFormName = itemView.findViewById(R.id.titleForm);
             tvFormDescription = itemView.findViewById(R.id.descriptionForm);
             tvFormCreatedAt = itemView.findViewById(R.id.createdAtForm);
             tvFormAuthor = itemView.findViewById(R.id.authorForm);
 
-            Log.d(Tag, "Constructor");
+            itemView.findViewById(R.id.btnForm).setOnClickListener(this);
 
         }
 
+        @Override
+        public void onClick(View view) {
+            onListFormListener.onListFormClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnListFormListener {
+        public void onListFormClick(int position);
     }
 }

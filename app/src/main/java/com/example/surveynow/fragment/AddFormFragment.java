@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -116,6 +117,8 @@ public class AddFormFragment extends Fragment {
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
+                                NavHostFragment.findNavController(AddFormFragment.this)
+                                        .navigate(R.id.action_addFormFragment_to_listFormFragment);
                                 Toast.makeText(getContext(), "Formulaire crée", Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -125,15 +128,16 @@ public class AddFormFragment extends Fragment {
                                 Toast.makeText(getContext(), "Formulaire n'a pas pu etre créer", Toast.LENGTH_SHORT).show();
                             }
                         });
-
-/*
-                NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
- */
             }
         });
 
-
+        binding.btnCancelForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(AddFormFragment.this)
+                        .navigate(R.id.action_addFormFragment_to_listFormFragment);
+            }
+        });
     }
 
     /**

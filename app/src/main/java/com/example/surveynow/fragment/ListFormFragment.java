@@ -5,6 +5,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavHost;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -13,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.surveynow.ListFormRecyclerViewAdapter;
+import com.example.surveynow.R;
 import com.example.surveynow.databinding.FragmentListFormBinding;
 import com.example.surveynow.model.Form;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,24 +31,18 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ListFormFragment extends Fragment {
+public class ListFormFragment extends Fragment implements ListFormRecyclerViewAdapter.OnListFormListener {
+
+    private static final String TAG = "ListFormFragment";
 
     private FragmentListFormBinding binding;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final String Tag = "ListFormFragment";
     private ListFormRecyclerViewAdapter adapter;
 
     ArrayList<Form> forms = new ArrayList<>();
 
     public ListFormFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -58,12 +57,18 @@ public class ListFormFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setUpArrayListForms();
+        populateRecyclerView();
 
-
+        binding.btnCreateForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavHostFragment.findNavController(ListFormFragment.this)
+                        .navigate(R.id.action_listFormFragment_to_addFormFragment);
+            }
+        });
     }
 
-    public void setUpArrayListForms() {
+    public void populateRecyclerView() {
         db.collection(Form.FIREBASE_COLLECTION)
                 .orderBy("createdAt", Query.Direction.ASCENDING)
                 .get()
@@ -72,7 +77,6 @@ public class ListFormFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(Tag, document.getId() + " => " + document.getData());
                                 if (!isDataComplete(document.getData())) {
                                     continue;
                                 }
@@ -84,15 +88,14 @@ public class ListFormFragment extends Fragment {
                                 form.setAuthor(document.getData().get("author").toString());
                                 form.setCreatedAt(((Timestamp) document.getData().get("createdAt")).toDate());
 
-                                Log.d(Tag, form.toString());
                                 forms.add(form);
                             }
 
-                            adapter = new ListFormRecyclerViewAdapter(getContext(), forms);
+                            adapter = new ListFormRecyclerViewAdapter(forms, ListFormFragment.this);
                             binding.listFormRecyclerView.setAdapter(adapter);
                             binding.listFormRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         } else {
-                            Log.w(Tag, "Error getting documents.", task.getException());
+                            Log.w(TAG, "Error getting documents.", task.getException());
                         }
                     }
                 });
@@ -100,5 +103,11 @@ public class ListFormFragment extends Fragment {
 
     private Boolean isDataComplete(Map<String, Object> data) {
         return data.containsKey("name") && data.containsKey("description") && data.containsKey("author") && data.containsKey("createdAt");
+    }
+
+    @Override
+    public void onListFormClick(int position) {
+        NavHostFragment.findNavController(ListFormFragment.this)
+                .navigate(R.id.action_listFormFragment_to_detailFormFragment);
     }
 }
