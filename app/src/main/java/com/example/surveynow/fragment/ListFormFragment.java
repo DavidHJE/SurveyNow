@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.NavHost;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -106,7 +107,10 @@ public class ListFormFragment extends Fragment implements ListFormRecyclerViewAd
 
     @Override
     public void onListFormClick(int position) {
-        NavHostFragment.findNavController(ListFormFragment.this)
-                .navigate(R.id.action_listFormFragment_to_detailFormFragment);
+        NavController navController = NavHostFragment.findNavController(ListFormFragment.this);
+
+        NavDirections action = ListFormFragmentDirections.actionListFormFragmentToDetailFormFragment(forms.get(position));
+
+        navController.navigate(action);
     }
 }
