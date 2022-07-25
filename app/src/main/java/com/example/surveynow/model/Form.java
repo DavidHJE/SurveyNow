@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 
 public class Form implements Parcelable {
     public static String FIREBASE_COLLECTION = "form";
@@ -17,8 +17,7 @@ public class Form implements Parcelable {
     private ArrayList<QuestionType> questions = new ArrayList<QuestionType>();
     private Date createdAt;
 
-    public Form() {
-    }
+    public Form() {}
 
     protected Form(Parcel in) {
         id = in.readString();
@@ -97,6 +96,38 @@ public class Form implements Parcelable {
                 ", questions=" + questions +
                 ", createdAt=" + createdAt.toString() +
                 '}';
+    }
+
+    public Boolean isValid() {
+        return this.isNameValid() && this.isDescriptionValid() && this.isAuthorValid() && this.isCreatedAtValid();
+    }
+
+    private Boolean isNameValid() {
+        return this.name != null && !this.name.trim().isEmpty();
+    }
+
+    private Boolean isDescriptionValid() {
+        return this.description != null && !this.description.trim().isEmpty()
+                && this.description.length() < 350;
+    }
+
+    private Boolean isAuthorValid() {
+        return this.author != null && !this.author.trim().isEmpty()
+                && this.author.length() < 60;
+    }
+
+    private Boolean isCreatedAtValid() {
+        return this.createdAt != null && System.currentTimeMillis() >= this.createdAt.getTime();
+    }
+
+    public HashMap<String, Object> generateHashMapFirebase() {
+        HashMap<String, Object> form = new HashMap<>();
+        form.put("name", this.getName());
+        form.put("description", this.getDescription());
+        form.put("author", this.getAuthor());
+        form.put("createdAt", this.getCreatedAt());
+
+        return form;
     }
 
     @Override

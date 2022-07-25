@@ -162,20 +162,22 @@ public class AddFormFragment extends Fragment {
      */
     private Boolean validateFormView() {
         if (TextUtils.isEmpty(binding.nameAddForm.getText().toString())) {
-            Toast.makeText(getContext(), "Nom vide", Toast.LENGTH_SHORT).show();
+            binding.nameAddForm.setError("Nom vide");
             return false;
         }
 
         if (TextUtils.isEmpty(binding.descriptionAddForm.getText().toString())) {
-            Toast.makeText(getContext(), "Description vide", Toast.LENGTH_SHORT).show();
+            binding.descriptionAddForm.setError("Description vide");
             return false;
         }
 
         if (TextUtils.isEmpty(binding.authorAddForm.getText().toString())) {
-            Toast.makeText(getContext(), "Auteur vide", Toast.LENGTH_SHORT).show();
+            binding.authorAddForm.setError("Auteur vide");
             return false;
         }
 
         return true;
     }
+
+
 }

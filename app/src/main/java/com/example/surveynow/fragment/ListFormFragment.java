@@ -48,7 +48,6 @@ public class ListFormFragment extends Fragment implements ListFormRecyclerViewAd
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         binding = FragmentListFormBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
